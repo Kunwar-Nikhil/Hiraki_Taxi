@@ -3,20 +3,22 @@ import {View, Text, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
 import { onboarding } from "../../constants";
+import CustomButton from "../../components/customButton";
 
 
 const Onboarding =({navigation}) => {
     const swiperRef = useRef<Swiper>(null);
     const [activeIndex,setActiveIndex]=useState(0)
+    const isLastSlide = activeIndex === onboarding.length-1;
     return(
-        <SafeAreaView style={{flex:1}}>
-            <View className="flex h-full items-center justify-between bg-white">
+        <SafeAreaView className="flex h-full items-center justify-between bg-white">
+        
            <TouchableOpacity onPress={()=>{
-             navigation.replace("LoginScreen")
+             navigation.replace("SignUpScreen")
            }} className="w-full flex justify-end items-end p-5">
             <Text className="text-black text-md font-JakartaBold"> Skip</Text>
            </TouchableOpacity>
-           <Swiper  ref={swiperRef}
+           <Swiper className="flex-1" ref={swiperRef}
            loop={false}
            dot={<View className="w-[32px] h-[4px] mx-1 bg-[#E2E8F0] rounded-full"/>}
         activeDot={<View className="w-[32px] h-[4px] mx-1 bg-[#0286FF] rounded-full"/>}
@@ -33,16 +35,16 @@ const Onboarding =({navigation}) => {
                 <Text className="text-black text-3xl font-bold mx-10 text-center">{item.title}</Text>
                 </View>
                  <View className="flex flex-row items-center justify-center w-full mt-10">
-                <Text style={{
-    fontFamily: "PlusJakartaSans-SemiBold",
-    fontSize: 20,
-    color: "red",
-  }}>{item.description}</Text>
+                <Text className="text-lg font-JakartaSemiBold text-center text-[#858585] mx-10 mt-3">{item.description}</Text>
                 </View>
                 </View>)}
            
            </Swiper>
-            </View>
+            <CustomButton
+           title={isLastSlide? "Get Started" : "Next" }
+           onPress={()=>isLastSlide ? navigation.replace("SignUpScreen") : swiperRef.current?.scrollBy(1)} className="justify-center w-11/12 mb-10 "/>
+            
+           
         </SafeAreaView>
     )
 }
