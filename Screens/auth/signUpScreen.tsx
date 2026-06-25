@@ -5,6 +5,8 @@ import InputField from "../../components/InputField";
 import { useState } from "react";
 import CustomButton from "../../components/customButton";
 import OAuth from "../../components/OAuth";
+import auth from "@react-native-firebase/auth"
+import Modal from "react-native-modal"
 
 
 const SignUpScreen =({navigation}) => {
@@ -15,7 +17,33 @@ const SignUpScreen =({navigation}) => {
         password:""
     })
 
-    const onSignUpPress =async()=>{}
+    const [verification,setVerification]=useState({
+        state: "default",
+        error: "",
+        code: "",
+    })
+      console.log("Verification State:", verification.state);
+
+    const onSignUpPress =async()=>{
+        try{
+            const createdUser = await auth().createUserWithEmailAndPassword(
+                form.email,
+                form.password
+            )
+            setVerification({
+                state:"success",
+                error:"",
+                code:"",
+            })
+              console.log("Verification State:", verification.state);
+            console.log(createdUser.user.email)
+            console.log(createdUser.user.uid)
+            
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
     return(
         <ScrollView className="flex-1 bg-white">
             <View className="flex-1 bg-white">
@@ -52,8 +80,10 @@ const SignUpScreen =({navigation}) => {
 
                     <CustomButton title="Sign Up" onPress={onSignUpPress} className="mt-6 mb-6" />
 
+
+
                     {/* OAuth */}
-                    <OAuth/>
+                    <OAuth navigation={navigation}/>
 
                     <View className="  flex-row justify-center items-center mt-4">
                       <Text className="text-lg text-general-200">Already have an account? </Text>
@@ -63,7 +93,18 @@ const SignUpScreen =({navigation}) => {
                     </TouchableOpacity>
                     </View>
 
-                    {/*Verification*/}
+                    <Modal isVisible={verification.state==="success"}>
+                        <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+                            <Image source={images.check} className="w-[110px] h-[110px] mx-auto my-5"/>
+                            <View className="items-center"><Text>Account Created Sucessfully</Text></View>
+                            <TouchableOpacity onPress={()=>{navigation.replace("LoginScreen")}}
+                                className=" bg-green-500 py-4 rounded-full  px-8 self-center">
+                               
+                                <Text className="text-white text-center font-bold text-lg">Continue</Text>
+                                
+                            </TouchableOpacity>
+                        </View>
+                    </Modal>
 
 
                 </View>

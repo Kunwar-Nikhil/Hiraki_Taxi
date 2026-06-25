@@ -5,9 +5,12 @@ import InputField from "../../components/InputField";
 import { useState } from "react";
 import CustomButton from "../../components/customButton";
 import OAuth from "../../components/OAuth";
+import auth from "@react-native-firebase/auth"
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
+const LoginScreen =({navigation}) => {
 
 
-const SignUpScreen =({navigation}) => {
 
     const [form,setForm]=useState({
         name:"",
@@ -15,7 +18,21 @@ const SignUpScreen =({navigation}) => {
         password:""
     })
 
-    const onSignInPress =async()=>{}
+   
+    
+
+    const onSignInPress =async()=>{
+        try{
+            const userCredential = await auth().signInWithEmailAndPassword(
+                form.email,
+                form.password
+            )
+            console.log(userCredential.user.email)
+            navigation.replace("HomeScreen")
+        } catch (error){
+            console.log(error);
+        }
+    }
     return(
         <ScrollView className="flex-1 bg-white">
             <View className="flex-1 bg-white">
@@ -46,7 +63,7 @@ const SignUpScreen =({navigation}) => {
                     <CustomButton title="Sign In" onPress={onSignInPress} className="mt-6 mb-6" />
 
                     {/* OAuth */}
-                    <OAuth/>
+                    <OAuth navigation={navigation}/>
 
                     <View className="  flex-row justify-center items-center mt-4">
                       <Text className="text-lg text-general-200">Don't have an account? </Text>
@@ -66,4 +83,4 @@ const SignUpScreen =({navigation}) => {
         </ScrollView>
     )
 }
-export default SignUpScreen;
+export default LoginScreen;
