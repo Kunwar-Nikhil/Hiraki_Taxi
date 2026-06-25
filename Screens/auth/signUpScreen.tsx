@@ -1,4 +1,4 @@
-import { View,Image, ScrollView, Text, TouchableOpacity } from "react-native";
+import { View,Image, ScrollView, Text, TouchableOpacity, Alert } from "react-native";
 
 import { icons, images } from "../../constants";
 import InputField from "../../components/InputField";
@@ -7,6 +7,7 @@ import CustomButton from "../../components/customButton";
 import OAuth from "../../components/OAuth";
 import auth from "@react-native-firebase/auth"
 import Modal from "react-native-modal"
+
 
 
 const SignUpScreen =({navigation}) => {
@@ -30,19 +31,42 @@ const SignUpScreen =({navigation}) => {
                 form.email,
                 form.password
             )
+            await createdUser.user.sendEmailVerification();
             setVerification({
-                state:"success",
+                state:"pending",
                 error:"",
                 code:"",
             })
-              console.log("Verification State:", verification.state);
+              console.log("User Created Sucessfully");
             console.log(createdUser.user.email)
             console.log(createdUser.user.uid)
             
         }
-        catch(error){
-            console.log(error)
-        }
+        catch (error) {
+            let message = "";
+            switch(error.code){
+                case "auth/email-already-in-use":
+                    message="Email already exists.";
+                    break;
+                 case "auth/weak-password":
+                    message="Password must be at least 6 characters."
+                    break
+                 case "auth/invalid-email":
+                    message="Please enter a valid email."
+                    break
+                default:
+                    message = "Something went wrong."
+
+            }
+    setVerification({
+        state: "failed",
+        error:message,
+        code: "",
+    });
+
+    console.log(error);
+}
+        
     }
     return(
         <ScrollView className="flex-1 bg-white">
@@ -93,17 +117,54 @@ const SignUpScreen =({navigation}) => {
                     </TouchableOpacity>
                     </View>
 
+<Modal isVisible={verification.state==="pending"}>
+    <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+        <Text className="text-2xl font-JakartaExtraBold mb-2">Verification</Text>
+        <Text className="font-Jakarta mb-5">
+            we've sent a verification link to {form.email}
+        </Text>
+        <TouchableOpacity className="bg-blue-500 py-3 rounded-xl mt-8" onPress={async()=>{
+            await auth().currentUser?.reload();
+            if(auth().currentUser?.emailVerified){
+                setVerification({
+                    state:"success",
+                    error:"",
+                    code:"",
+                })
+            }else{
+                Alert.alert("Email Not Verified","Please verify your email first")
+            }
+        }}
+        >
+            <Text className="text-white text-center">
+                I have verified my email
+            </Text>
+        </TouchableOpacity>
+    </View>
+
+</Modal>
                     <Modal isVisible={verification.state==="success"}>
                         <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
                             <Image source={images.check} className="w-[110px] h-[110px] mx-auto my-5"/>
                             <View className="items-center"><Text>Account Created Sucessfully</Text></View>
-                            <TouchableOpacity onPress={()=>{navigation.replace("LoginScreen")}}
+                            <TouchableOpacity onPress={()=>{setVerification({state:"default",error:"",code:""});navigation.replace("LoginScreen")}}
                                 className=" bg-green-500 py-4 rounded-full  px-8 self-center">
                                
                                 <Text className="text-white text-center font-bold text-lg">Continue</Text>
                                 
                             </TouchableOpacity>
                         </View>
+                    </Modal>
+                    <Modal isVisible={verification.state==="failed"}>
+                    <View className=" bg-white px-7 py-9 rounded-2xl min-h-[250px]">
+                    <Text className="text-red-500 text-xl font-bold text-center">
+                    Sign Up Failed</Text>
+                    <Text className="text-center mt-4 text-gray-600">{verification.error}</Text>
+                    <TouchableOpacity onPress={()=>setVerification({state:"default",error:"",code:"",})}
+                    className="bg-red-500 py-3 px-8 rounded-xl mt-5 self-center">
+                    <Text className="text-white font-bold">OK</Text>
+                    </TouchableOpacity>
+                    </View>
                     </Modal>
 
 
