@@ -8,6 +8,7 @@ import LoginScreen from "./Screens/auth/loginScreen"
 import Onboarding from "./Screens/auth/welcome";
 import SignUpScreen from "./Screens/auth/signUpScreen";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import BottomTabs from "./BottomsTabs";
 
 
 const Stack = createNativeStackNavigator();
@@ -45,7 +46,7 @@ export default function App() {
 />
 <Stack.Screen
   name="HomeScreen"
-  component={Home}
+  component={BottomTabs}
 />
   </Stack.Navigator>
 </NavigationContainer>
