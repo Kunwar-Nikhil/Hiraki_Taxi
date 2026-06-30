@@ -7,6 +7,7 @@ import CustomButton from "../../components/customButton";
 import OAuth from "../../components/OAuth";
 import auth from "@react-native-firebase/auth"
 import Modal from "react-native-modal"
+import  firestore  from "@react-native-firebase/firestore";
 
 
 
@@ -31,7 +32,28 @@ const SignUpScreen =({navigation}) => {
                 form.email,
                 form.password
             )
+                      await createdUser.user.updateProfile({
+    displayName: form.name,
+});
             await createdUser.user.sendEmailVerification();
+
+            console.log(auth().currentUser);
+  
+            await firestore()
+            .collection("users")
+            .doc(createdUser.user.uid)
+            .set({
+                  uid: createdUser.user.uid,
+      name: form.name,
+      email: form.email,
+      profileImage: createdUser.user.photoURL || "",
+      phone: createdUser.user.phoneNumber || "",
+      emailVerified: false,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+            },
+        {
+merge:true,
+        })
             setVerification({
                 state:"pending",
                 error:"",
@@ -126,6 +148,10 @@ const SignUpScreen =({navigation}) => {
         <TouchableOpacity className="bg-blue-500 py-3 rounded-xl mt-8" onPress={async()=>{
             await auth().currentUser?.reload();
             if(auth().currentUser?.emailVerified){
+                await firestore().collection("users").doc(auth().currentUser?.uid)
+                .update({
+                    emailVerified:true,
+                })
                 setVerification({
                     state:"success",
                     error:"",

@@ -1,4 +1,4 @@
-import { View,Image, ScrollView, Text, TouchableOpacity } from "react-native";
+import { View,Image, ScrollView, Text, TouchableOpacity, Alert } from "react-native";
 
 import { icons, images } from "../../constants";
 import InputField from "../../components/InputField";
@@ -7,6 +7,7 @@ import CustomButton from "../../components/customButton";
 import OAuth from "../../components/OAuth";
 import auth from "@react-native-firebase/auth"
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import firestore from "@react-native-firebase/firestore"
 
 const LoginScreen =({navigation}) => {
 
@@ -27,7 +28,20 @@ const LoginScreen =({navigation}) => {
                 form.email,
                 form.password
             )
-            console.log(userCredential.user.email)
+            await userCredential.user.reload();
+           if(!userCredential.user.emailVerified){
+            Alert.alert("Not Verified",
+                "Verify your email first"
+            )
+            await auth().signOut();
+            return;
+           }
+         await firestore().collection("users").doc(userCredential.user.uid).set({
+            lastLogin:firestore.FieldValue.serverTimestamp()
+         },{
+            merge:true,
+         })
+           
             navigation.replace("HomeScreen")
         } catch (error){
             console.log(error);

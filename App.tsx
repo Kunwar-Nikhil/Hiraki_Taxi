@@ -11,6 +11,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import BottomTabs from "./BottomsTabs";
 
 
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -19,9 +20,8 @@ export default function App() {
   webClientId: "1082258065937-0sugn3tquerdn06r2j6q8clkebq708vm.apps.googleusercontent.com",
     offlineAccess: true,
 });
-  },[])
- 
-  
+  })
+
   return (
 
 <NavigationContainer>

@@ -96,3 +96,5 @@ android/app/release/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+config.ts
