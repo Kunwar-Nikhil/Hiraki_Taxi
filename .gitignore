@@ -98,3 +98,4 @@ android/app/release/
 !.yarn/versions
 
 config.ts
+local.properties

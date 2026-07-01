@@ -9,6 +9,7 @@ import Onboarding from "./Screens/auth/welcome";
 import SignUpScreen from "./Screens/auth/signUpScreen";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import BottomTabs from "./BottomsTabs";
+import FindRide from "./Screens/FindRide";
 
 
 
@@ -48,6 +49,18 @@ export default function App() {
   name="HomeScreen"
   component={BottomTabs}
 />
+<Stack.Screen
+  name="FindRide"
+  component={FindRide}
+/>
+{/* <Stack.Screen
+  name="Confirm-Ride"
+  component={ConfirmRide}
+/>
+<Stack.Screen
+  name="Book-Ride"
+  component={BookRide}
+/> */}
   </Stack.Navigator>
 </NavigationContainer>
 
